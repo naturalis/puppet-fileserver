@@ -89,32 +89,33 @@ class fileserver(
   	remounts => true,
   	options => "defaults",
   	atboot  => "true",
-  } ->
-  class {'samba::server':
- 	workgroup => 'workgroup',
-    server_string => "Samba Backup Server",
-    interfaces => "eth0 lo",
-    security => 'share'
-  } ->
-  samba::server::share {'backup-share':
-  	comment => 'Backup Share',
-  	path => $sharedir,
-  	guest_only => true,
-  	guest_ok => true,
-  	guest_account => "guest",
-  	browsable => false,
-  	create_mask => 0777,
-  	force_create_mask => 0777,
-  	directory_mask => 0777,
-  	force_directory_mask => 0777,
+  }
+  # ->
+  #class {'samba::server':
+ 	#workgroup => 'workgroup',
+  #  server_string => "Samba Backup Server",
+  #  interfaces => "eth0 lo",
+  #  security => 'share'
+  #} ->
+  #samba::server::share {'backup-share':
+  #	comment => 'Backup Share',
+  #	path => $sharedir,
+  #	guest_only => true,
+  #	guest_ok => true,
+  #	guest_account => "guest",
+  #	browsable => false,
+  #	create_mask => 0777,
+  #	force_create_mask => 0777,
+  #	directory_mask => 0777,
+  #	force_directory_mask => 0777,
 #  force_group => 'group',
 #  force_user => 'user',
 #  copy => 'some-other-share',
-  }
+  #}
 
   # Nfs mount point
   include concat::setup
-  #include nfs::server
+  include nfs::server
   nfs::server::export{$sharedir:
     clients => "${nfs_allowed_ip}(rw,sync,no_root_squash)",
     nfstag  => "${::hostname}_nfs_backup_share",
