@@ -49,14 +49,14 @@
 # $disksize = $::blockdevice_sdb_size
 # $nrdisks = size($pvs)
 
-class fileserver {
+class fileserver( 
   $pvs,
-  $vg = 'vg1'
-  $lv = 'lv1'
-  $fstype = 'ext4'
-  $sharedir = '/mnt/backup'
-# Create pv's, lv, vg, fs
-
+  $vg             = 'vg1',
+  $lv             = 'lv1',
+  $fstype         = 'ext4',
+  $sharedir       = '/mnt/backup',
+  $nfs_allowed_ip = '',
+){
   physical_volume { $pvs:
   	ensure => present,
   } ->
@@ -107,5 +107,12 @@ class fileserver {
 #  force_group => 'group',
 #  force_user => 'user',
 #  copy => 'some-other-share',
+  }
+
+  # Nfs mount point
+  include nfs::server
+  nfs::server::export{$sharedir:
+    clients => "${nfs_allowed_ip}(rw,sync,no_root_squash)",
+    require => File['sharedir'],
   }
 }
