@@ -68,10 +68,10 @@ class fileserver(
   	physical_volumes => $pvs_array,
   } ->
   exec { $lv:
-  	command => "/sbin/lvcreate --name $lv $vg -l 100%FREE",
+  	command => "/sbin/lvcreate --name ${lv} ${vg} -l 100%FREE",
   	creates => "/dev/$vg/$lv",
   } ->
-  filesystem { "/dev/$vg/$lv":
+  filesystem { "/dev/${vg}/${lv}":
   	ensure  => present,
   	fs_type => $fstype,
   } ->
@@ -84,7 +84,7 @@ class fileserver(
   mount { 'sharemount':
   	ensure => 'mounted',
   	name   => $sharedir,
-  	device => "/dev/$vg/$lv",
+  	device => "/dev/${vg}/${lv}",
   	fstype => $fstype,
   	remounts => true,
   	options => "defaults",
@@ -98,7 +98,7 @@ class fileserver(
   } ->
   samba::server::share {'backup-share':
   	comment => 'Backup Share',
-  	path => $shraedir,
+  	path => $sharedir,
   	guest_only => true,
   	guest_ok => true,
   	guest_account => "guest",
@@ -113,11 +113,10 @@ class fileserver(
   }
 
   # Nfs mount point
-  include concat::setup
-  include nfs::server
+  # include nfs::server
   nfs::server::export{$sharedir:
     clients => "${nfs_allowed_ip}(rw,sync,no_root_squash)",
-    nfstag  => "${hostname}_nfs_backup_share",
+    nfstag  => "${::hostname}_nfs_backup_share",
     require => File[$sharedir],
   }
 }
