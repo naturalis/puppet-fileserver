@@ -113,8 +113,8 @@ class fileserver(
   }
 
   # Nfs mount point
-  
-  include nfs::server
+  include concat::setup
+  #include nfs::server
   nfs::server::export{$sharedir:
     clients => "${nfs_allowed_ip}(rw,sync,no_root_squash)",
     nfstag  => "${::hostname}_nfs_backup_share",
