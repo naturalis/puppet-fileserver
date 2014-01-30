@@ -58,38 +58,38 @@ class fileserver(
   $nfs_allowed_ip = '',
 ){
   
-  $pvs_array = split($pvs,',')
-  
-  physical_volume { $pvs_array:
-  	ensure => present,
-  } ->
-  volume_group { $vg:
-  	ensure           => present,
-  	physical_volumes => $pvs_array,
-  } ->
-  exec { $lv:
-  	command => "/sbin/lvcreate --name ${lv} ${vg} -l 100%FREE",
-  	creates => "/dev/$vg/$lv",
-  } ->
-  filesystem { "/dev/${vg}/${lv}":
-  	ensure  => present,
-  	fs_type => $fstype,
-  } ->
+#  $pvs_array = split($pvs,',')
+#  
+#  physical_volume { $pvs_array:
+#  	ensure => present,
+ # } ->
+  #volume_group { $vg:
+  #	ensure           => present,
+  #	physical_volumes => $pvs_array,
+  #} ->
+  #exec { $lv:
+ # 	command => "/sbin/lvcreate --name ${lv} ${vg} -l 100%FREE",
+ # 	creates => "/dev/$vg/$lv",
+ # } ->
+ # filesystem { "/dev/${vg}/${lv}":
+ # 	ensure  => present,
+ # 	fs_type => $fstype,
+ # } ->
 
 # Create and mount share directory
-  file { $sharedir:
-  	ensure => directory,
-  	path   => $sharedir,
-  } ->
-  mount { 'sharemount':
-  	ensure => 'mounted',
-  	name   => $sharedir,
-  	device => "/dev/${vg}/${lv}",
-  	fstype => $fstype,
-  	remounts => true,
-  	options => "defaults",
-  	atboot  => "true",
-  }
+#  file { $sharedir:
+#  	ensure => directory,
+#  	path   => $sharedir,
+#  } ->
+#  mount { 'sharemount':
+#  	ensure => 'mounted',
+#  	name   => $sharedir,
+#  	device => "/dev/${vg}/${lv}",
+#  	fstype => $fstype,
+#  	remounts => true,
+#  	options => "defaults",
+#  	atboot  => "true",
+#  }
   # ->
   #class {'samba::server':
  	#workgroup => 'workgroup',
