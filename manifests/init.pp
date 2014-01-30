@@ -57,12 +57,15 @@ class fileserver(
   $sharedir       = '/mnt/backup',
   $nfs_allowed_ip = '',
 ){
-  physical_volume { $pvs:
+  
+  $pvs_array = split($pvs,',')
+  
+  physical_volume { $pvs_array:
   	ensure => present,
   } ->
   volume_group { $vg:
   	ensure           => present,
-  	physical_volumes => $pvs,
+  	physical_volumes => $pvs_array,
   } ->
   exec { $lv:
   	command => "/sbin/lvcreate --name $lv $vg -l 100%FREE",
