@@ -117,7 +117,7 @@ class fileserver(
   include nfs::server
   nfs::server::export{$sharedir:
     clients => "${nfs_allowed_ip}(rw,sync,no_root_squash)",
-    tags    => "${hostname}_nfs_backup_share",
+    nfstag  => "${hostname}_nfs_backup_share",
     require => File['sharedir'],
   }
 }
