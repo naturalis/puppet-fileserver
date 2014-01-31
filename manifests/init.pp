@@ -56,6 +56,9 @@ class fileserver(
   $fstype         = 'ext4',
   $sharedir       = '/mnt/backup',
   $nfs_allowed_ip = '',
+  $bindinterfaces = 'eth0 lo',
+  $users          = {'backupuser'   => {'password' => 'BackupPWD'  },
+		     'testuser'     => {'password' => 'TestPWD01'  }},
 ){
   
   $pvs_array = split($pvs,',')
@@ -93,16 +96,18 @@ class fileserver(
   class {'samba::server':
  	workgroup => 'workgroup',
     server_string => "Samba Backup Server",
-    interfaces => "eth0 lo",
+    interfaces => $bindinterfaces,
     security => 'share'
   } ->
   samba::server::share {'backup-share':
   	comment => 'Backup Share',
   	path => $sharedir,
-  	guest_only => true,
+  	guest_only => false,
   	guest_ok => true,
   	guest_account => "guest",
-  	browsable => false,
+        valid_users => "backupuser",
+  	writable => true,
+  	browsable => true,
   	create_mask => 0777,
   	force_create_mask => 0777,
   	directory_mask => 0777,
@@ -111,6 +116,8 @@ class fileserver(
 #  force_user => 'user',
 #  copy => 'some-other-share',
   }
+
+  create_resources('fileserver::users', $users)
 
   # Nfs mount point
   # include concat::setup
